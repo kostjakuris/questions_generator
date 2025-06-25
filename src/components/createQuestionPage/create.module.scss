@@ -1,5 +1,6 @@
 .create {
   height: 100%;
+  overflow-y: auto;
   margin: 0;
   background: white;
   display: flex;
@@ -83,6 +84,7 @@
   }
 
   &__submit {
+    cursor: pointer;
     width: 150px;
     height: 48px;
     border-radius: 25px;
@@ -92,6 +94,7 @@
   }
 
   &__button {
+    cursor: pointer;
     width: 150px;
     height: 48px;
     border-radius: 25px;
