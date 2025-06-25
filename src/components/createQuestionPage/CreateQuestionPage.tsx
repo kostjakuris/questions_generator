@@ -2,29 +2,47 @@
 import React from 'react';
 import styles from './create.module.scss';
 import QuestionList from '@/components/questionList/QuestionList';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import TextArea from '@/components/textArea/TextArea';
+import Input from '@/components/input/Input';
+import { Delete } from '../../../public/images/Delete';
+import AnswerVariantSelect from '@/components/answerVariantSelect/AnswerVariantSelect';
 
-interface QuestionFields {
-  questionText: string;
-  answerFormat: string;
-}
 
 const createQuestionSchema = z.object({
   questionText: z.string().nonempty('Question text is required'),
-  answerFormat: z.string().nonempty('Answer variant is required'),
+  answerFormat: z.string().nonempty('Answer format is required'),
+  answerVariant: z.string().nonempty('Answer variant is required'),
+  answerOption: z.array(z.object({option: z.string().nonempty('Option is required')})),
 });
 
+type formSchema = z.infer<typeof createQuestionSchema>;
+
+const formsDefaultValues: formSchema = {
+  questionText: '',
+  answerFormat: '',
+  answerVariant: '',
+  answerOption: [{
+    option: '',
+  }]
+};
+
 const CreateQuestionPage = () => {
-  const {register, handleSubmit, watch, formState: {errors}} = useForm<QuestionFields>({
-    resolver: zodResolver(createQuestionSchema)
+  const {register, handleSubmit, control, watch, formState: {errors}} = useForm<formSchema>({
+    resolver: zodResolver(createQuestionSchema),
+    defaultValues: formsDefaultValues
   });
   const currentValues = watch();
-  const submitHandler: SubmitHandler<QuestionFields> = (data) => {
+  const submitHandler: SubmitHandler<formSchema> = (data) => {
     console.log(data);
   };
+  
+  const {fields, append, remove} = useFieldArray<any>({
+    control,
+    name: 'answerOption'
+  });
   return (
     <div className={styles.create}>
       <QuestionList />
@@ -38,46 +56,64 @@ const CreateQuestionPage = () => {
             error={String(errors.questionText?.message)}
             isError={Boolean(errors.questionText)}
           />
-          <div className={'flex items-center h-[50px] w-[800px] mt-5'}>
-            <p className={`${styles.create__text} mr-5`}>Answer variants</p>
-            <div className={'flex flex-col items-center justify-center h-[60px] mr-5'}>
-              <select
-                {...register('answerFormat')}
-                className={styles.create__select}
-              >
-                <option className={'text-black'} value=''></option>
-                <option className={'text-black'} value='multiple answer'>multiple answer</option>
-                <option className={'text-black'} value='single answer'> single answer</option>
-              </select>
+          <div className={'flex items-center justify-start h-[80px] w-[800px] mt-5'}>
+            <div>
+              <div className={'flex items-center'}>
+                <p className={`${styles.create__text} mr-5`}>Answer variants</p>
+                <div className={'flex flex-col items-center justify-center h-[50px] mr-5'}>
+                  <select
+                    {...register('answerFormat')}
+                    className={styles.create__select}
+                  >
+                    <option className={'text-black'} value=''></option>
+                    <option className={'text-black'} value='multiple answer'>multiple answer</option>
+                    <option className={'text-black'} value='single answer'> single answer</option>
+                  </select>
+                </div>
+              </div>
+              {errors.answerFormat &&
+                <p className={'text-red-500 mb-3 mr-3 text-right'}>{errors.answerFormat.message}</p>}
             </div>
             {
               currentValues.answerFormat === 'multiple answer' ?
-                <>
-                  <p className={`${styles.create__text} mr-5`}>Multiple answer variants</p>
-                  <div className={'flex flex-col items-center justify-center h-[60px]'}>
-                    <select
-                      {...register('answerFormat')}
-                      className={styles.create__select}
-                    >
-                      <option className={'text-black'} value=''></option>
-                      <option className={'text-black'} value='checkbox'>checkbox</option>
-                      <option className={'text-black'} value='select'>select</option>
-                      <option className={'text-black'} value='radio'>radio</option>
-                    </select>
-                  </div>
-                </>
+                <AnswerVariantSelect register={register('answerVariant')} error={String(errors.answerVariant?.message)}
+                  isError={Boolean(errors.answerVariant)} />
                 : null
             }
           </div>
           {
             currentValues.answerFormat === 'multiple answer' ?
-            <div className={'flex items-center h-[50px] w-[800px] mt-5'}>
-              <button className={styles.create__button}>Add answer</button>
-              <button className={styles.create__button}>Remove answer</button>
-            </div>
+              <div className={'flex items-center h-[50px] w-[800px] mt-5'}>
+                <button
+                  className={styles.create__button}
+                  type={'button'}
+                  onClick={() => append({option: ''})}>
+                  Add answer
+                </button>
+              </div>
               : null
           }
-         
+          <div className={'w-full mx-auto mt-5'}>
+            {
+              currentValues.answerFormat === 'multiple answer' ?
+                fields.map((field, index) =>
+                  <div key={field.id} className={'flex justify-center items-center h-[40px] my-5'}>
+                    <Input
+                      class_name={styles.create__option}
+                      register={register(`answerOption.${index}.option`)}
+                      placeholder={'Enter answer option'}
+                      type={'text'}
+                      error={String(errors.answerOption?.[index]?.option?.message)}
+                      isError={Boolean(errors.answerOption?.[index]?.option)}
+                    />
+                    <button className={'mt-3'} onClick={() => remove(index)}>
+                      <Delete class_name={'h-[35px] w-[35px]'} />
+                    </button>
+                  </div>
+                )
+                : null
+            }
+          </div>
           <button className={styles.create__submit} type={'submit'}> Create
           </button>
         </form>

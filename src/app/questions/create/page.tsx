@@ -5,16 +5,16 @@ import styles from '../../root.module.scss'
 
 export async function generateMetadata() {
   const metadata: Metadata = {
-    title: 'Sign up',
-    description: 'Create your account',
-    keywords: 'sign up, account, email,password',
+    title: 'Create Question',
+    description: 'Create new question',
+    keywords: 'question, new',
     alternates: {
-      canonical: '/register',
+      canonical: '/questions/create',
     },
     openGraph: {
-      title: 'Sign up',
+      title: 'Create Question',
       description: '',
-      url: '/register',
+      url: '/questions/create',
       locale: 'en_US',
       type: 'website',
       
