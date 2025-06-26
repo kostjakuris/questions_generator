@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { CreateQuestionFields } from '@/interfaces/question.interface';
+import { CreateQuestionFields, EditQuestionFields } from '@/interfaces/question.interface';
 
 export const questionApi = createApi({
   reducerPath: 'questionApi',
@@ -28,6 +28,28 @@ export const questionApi = createApi({
       }),
       providesTags: ['Question']
     }),
+    editQuestion: build.mutation({
+      query: ({id, text, questionKind, answerVariant, questionOptions, answers}: EditQuestionFields) => ({
+        url: '/question/edit',
+        method: 'PATCH',
+        body: {id, text, questionKind, answerVariant, questionOptions, answers}
+      }),
+      invalidatesTags: ['Question']
+    }),
+    deleteQuestion: build.mutation({
+      query: (id: number) => ({
+        url: '/question/delete',
+        method: 'DELETE',
+        body: {id}
+      }),
+      invalidatesTags: ['Question']
+    }),
   })
 });
-export const {useGetAllQuestionsQuery, useCreateQuestionMutation, useGetQuestionInfoQuery} = questionApi;
+export const {
+  useGetAllQuestionsQuery,
+  useCreateQuestionMutation,
+  useGetQuestionInfoQuery,
+  useEditQuestionMutation,
+  useDeleteQuestionMutation,
+} = questionApi;

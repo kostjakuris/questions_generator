@@ -2,11 +2,11 @@ import React, { FC } from 'react';
 import { UseFormRegisterReturn } from 'react-hook-form';
 
 interface TextAreaProps {
-  register: UseFormRegisterReturn<'questionText'>;
+  register: UseFormRegisterReturn<string>;
   placeholder: string;
   class_name?: string;
-  error: string;
-  isError: boolean;
+  error?: string;
+  isError?: boolean;
 }
 
 const TextArea: FC<TextAreaProps> = ({class_name, placeholder, error, isError, register}) => {

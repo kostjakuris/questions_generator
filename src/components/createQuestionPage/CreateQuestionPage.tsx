@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from './create.module.scss';
 import QuestionList from '@/components/questionList/QuestionList';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
@@ -9,14 +9,15 @@ import TextArea from '@/components/textArea/TextArea';
 import Input from '@/components/input/Input';
 import { Delete } from '../../../public/images/Delete';
 import AnswerVariantSelect from '@/components/answerVariantSelect/AnswerVariantSelect';
-import { useCreateQuestionMutation } from '@/lib/questionApi';
+import { useCreateQuestionMutation, useEditQuestionMutation, useGetQuestionInfoQuery } from '@/lib/questionApi';
+import { useAppSelector } from '@/lib/hooks';
 
 
 const createQuestionSchema = z.object({
   questionText: z.string().nonempty('Question text is required'),
   answerFormat: z.string().nonempty('Answer format is required'),
-  answerVariant: z.string().nonempty('Answer variant is required'),
-  answerOption: z.array(z.object({description: z.string().nonempty('Option is required')})),
+  answerVariant: z.string().optional(),
+  answerOption: z.array(z.object({description: z.string().optional()})),
 });
 
 type formSchema = z.infer<typeof createQuestionSchema>;
@@ -31,25 +32,48 @@ const formsDefaultValues: formSchema = {
 };
 
 const CreateQuestionPage = () => {
-  const {register, handleSubmit, control, watch, formState: {errors}} = useForm<formSchema>({
+  const {register, handleSubmit, control, watch, setValue, formState: {errors}} = useForm<formSchema>({
     resolver: zodResolver(createQuestionSchema),
     defaultValues: formsDefaultValues
   });
+  const {isEdit, questionId} = useAppSelector(state => state.question);
+  const {data: questionData} = useGetQuestionInfoQuery(questionId ? questionId : '');
   const [createQuestion] = useCreateQuestionMutation();
+  const [editQuestion] = useEditQuestionMutation();
   const currentValues = watch();
   const submitHandler: SubmitHandler<formSchema> = async(data) => {
-    await createQuestion({
-      text: data.questionText,
-      questionKind: data.answerFormat,
-      answerVariant: data.answerVariant,
-      questionOptions: data.answerOption
-    });
+    if (!isEdit) {
+      await createQuestion({
+        text: data.questionText,
+        questionKind: data.answerFormat,
+        answerVariant: data.answerVariant ? data.answerVariant : 'textarea',
+        questionOptions: data.answerOption[0].description ? data.answerOption : [],
+      });
+    } else {
+      await editQuestion({
+        id: Number(questionId),
+        text: data.questionText,
+        questionKind: data.answerFormat,
+        answerVariant: data.answerVariant ? data.answerVariant : 'textarea',
+        questionOptions: data.answerOption[0]?.description ? data.answerOption : [],
+        answers: questionData.answers
+      });
+    }
   };
   
   const {fields, append, remove} = useFieldArray<any>({
     control,
     name: 'answerOption'
   });
+  
+  useEffect(() => {
+    if (isEdit && questionData) {
+      setValue('questionText', questionData.questionText);
+      setValue('answerFormat', questionData.kind);
+      setValue('answerVariant', questionData.answerVariant);
+      setValue('answerOption', questionData.options);
+    }
+  }, [isEdit, questionData]);
   return (
     <div className={styles.create}>
       <QuestionList />
@@ -121,7 +145,7 @@ const CreateQuestionPage = () => {
                 : null
             }
           </div>
-          <button className={styles.create__submit} type={'submit'}>Create</button>
+          <button className={styles.create__submit} type={'submit'}>{isEdit ? 'Edit' : 'Create'}</button>
         </form>
       </div>
     </div>
