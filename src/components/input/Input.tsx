@@ -13,14 +13,14 @@ interface InputProps {
 
 const Input: FC<InputProps> = ({class_name, placeholder, type, error, isError, register, value}) => {
   return (
-    <div className={type === 'checkbox' ? 'flex flex-col items-center h-[60px]' :
+    <div className={type === 'checkbox' || type === 'radio' ? 'flex flex-col items-center h-[60px]' :
       'flex flex-col items-center h-[60px] max-w-[600px] w-full'}>
       {
         value ?
-          <div className={'flex w-[100px]'}>
+          <div className={'flex'}>
             <input
               {...register}
-              className={type === 'checkbox' ? `${class_name} mx-5` : `${class_name} mr-5`}
+              className={type === 'checkbox' || type === 'radio' ? `${class_name} mx-5` : `${class_name} mr-5`}
               placeholder={placeholder}
               type={type}
               value={value}

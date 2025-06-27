@@ -55,7 +55,7 @@ const QuestionItem: FC<ItemProps> = ({questionId}) => {
     <div className={styles.question}>
       <p className={styles.question__text}>{questionData?.questionText}</p>
       <form className={'flex flex-col items-center w-full'} onSubmit={handleSubmit(submitHandler)}>
-        <div className={variant === 'checkbox' ? 'flex mx-auto items-center mt-6' :
+        <div className={variant === 'checkbox' || variant === 'radio' ? 'flex mx-auto items-center mt-6' :
           'flex justify-between items-center mt-6 w-full'}>
           {AnswerComponent && questionData?.kind === 'multiple' ?
             AnswerComponent({options: questionData?.options, register: register('answer')}) :

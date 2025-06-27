@@ -23,7 +23,7 @@ export const answerVariantConfig: Record<AnswerVariant, (props: AnswerComponentP
     </>
   ),
   radio: ({options = [], register}) => (
-    <div className={'flex mx-auto'}>
+    <div className={'flex justify-around w-full'}>
       {options.map((option) => (
         <Input
           key={option?.description}
