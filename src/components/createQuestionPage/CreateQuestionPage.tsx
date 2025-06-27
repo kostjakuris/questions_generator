@@ -113,7 +113,7 @@ const CreateQuestionPage = () => {
             }
           </div>
           {
-            currentValues.answerFormat === 'multiple' ?
+            currentValues.answerFormat === 'multiple' && currentValues.answerVariant !== 'boolean' ?
               <div className={'flex items-center h-[50px] w-[800px] mt-5'}>
                 <button
                   className={styles.create__button}
