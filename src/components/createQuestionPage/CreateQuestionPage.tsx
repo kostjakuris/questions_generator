@@ -79,6 +79,7 @@ const CreateQuestionPage = () => {
       setValue('answerOption', questionData.options);
     }
   }, [isEdit, questionData]);
+  
   return (
     <div className={styles.create}>
       <QuestionList />
@@ -150,6 +151,14 @@ const CreateQuestionPage = () => {
                 : null
             }
           </div>
+          {
+            isEdit &&
+            <button onClick={() => {
+              dispatch(setIsEdit(false));
+              reset();
+            }} className={styles.create__submit}
+              type={'button'}>Cancel</button>
+          }
           <button className={styles.create__submit} type={'submit'}>{isEdit ? 'Edit' : 'Create'}</button>
         </form>
       </div>
