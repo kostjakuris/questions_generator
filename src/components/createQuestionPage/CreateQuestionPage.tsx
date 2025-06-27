@@ -10,7 +10,8 @@ import Input from '@/components/input/Input';
 import { Delete } from '../../../public/images/Delete';
 import AnswerVariantSelect from '@/components/answerVariantSelect/AnswerVariantSelect';
 import { useCreateQuestionMutation, useEditQuestionMutation, useGetQuestionInfoQuery } from '@/lib/questionApi';
-import { useAppSelector } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { setIsEdit } from '@/lib/slice';
 
 
 const createQuestionSchema = z.object({
@@ -32,10 +33,11 @@ const formsDefaultValues: formSchema = {
 };
 
 const CreateQuestionPage = () => {
-  const {register, handleSubmit, control, watch, setValue, formState: {errors}} = useForm<formSchema>({
+  const {register, handleSubmit, reset, control, watch, setValue, formState: {errors}} = useForm<formSchema>({
     resolver: zodResolver(createQuestionSchema),
     defaultValues: formsDefaultValues
   });
+  const dispatch = useAppDispatch();
   const {isEdit, questionId} = useAppSelector(state => state.question);
   const {data: questionData} = useGetQuestionInfoQuery(questionId ? questionId : '');
   const [createQuestion] = useCreateQuestionMutation();
@@ -49,6 +51,7 @@ const CreateQuestionPage = () => {
         answerVariant: data.answerVariant ? data.answerVariant : 'textarea',
         questionOptions: data.answerOption[0].description ? data.answerOption : [],
       });
+      reset();
     } else {
       await editQuestion({
         id: Number(questionId),
@@ -58,6 +61,8 @@ const CreateQuestionPage = () => {
         questionOptions: data.answerOption[0]?.description ? data.answerOption : [],
         answers: questionData.answers
       });
+      reset();
+      dispatch(setIsEdit(false));
     }
   };
   
