@@ -132,7 +132,7 @@ const CreateQuestionPage = () => {
           }
           <div className={'w-full mx-auto mt-5'}>
             {
-              currentValues.answerFormat === 'multiple' ?
+              currentValues.answerFormat === 'multiple' && currentValues.answerVariant !== 'boolean' ?
                 fields.map((field, index) =>
                   <div key={field.id} className={'flex justify-center items-center h-[40px] my-5'}>
                     <Input

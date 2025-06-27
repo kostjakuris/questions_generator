@@ -14,7 +14,7 @@ export const answerVariantConfig: Record<AnswerVariant, (props: AnswerComponentP
     <>
       {options.map((option: any) => (
         <Input
-          key={option?.description}
+          key={option?.id}
           register={register}
           value={option?.description}
           type='checkbox'
@@ -26,7 +26,7 @@ export const answerVariantConfig: Record<AnswerVariant, (props: AnswerComponentP
     <div className={'flex justify-around w-full'}>
       {options.map((option) => (
         <Input
-          key={option?.description}
+          key={option?.id}
           class_name={'ml-2'}
           register={register}
           value={option?.description}
@@ -60,7 +60,7 @@ export const answerVariantConfig: Record<AnswerVariant, (props: AnswerComponentP
         >
           <option className={'text-black'} value=''></option>
           {options.map((option) => (
-            <option key={option?.description} className={'text-black'}
+            <option key={option?.id} className={'text-black'}
               value={option?.description}>{option?.description}</option>
           ))}
         </select>
