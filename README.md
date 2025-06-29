@@ -12,8 +12,5 @@ Then run project by `npm run dev`
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-To see question admin page with list of all questions, and form to create new one,
-open [http://localhost:3000/question/create](http://localhost:3000/question/create)
-
 To see question with answer variants, click to some question in the list
 

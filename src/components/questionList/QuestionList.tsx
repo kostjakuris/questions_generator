@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './list.module.scss';
-import { useDeleteQuestionMutation, useGetAllQuestionsQuery, useLazyGetQuestionInfoQuery } from '@/lib/questionApi';
+import { useDeleteQuestionMutation, useGetAllQuestionsQuery } from '@/lib/questionApi';
 import { Delete } from '../../../public/images/Delete';
 import { Edit } from '../../../public/images/Edit';
 import { useRouter } from 'next/navigation';
@@ -21,7 +21,6 @@ const QuestionList = () => {
     event.stopPropagation();
     dispatch(setIsEdit(true));
     dispatch(setQuestionId(id));
-    // await getQuestionInfo(String(id));
   };
   return (
     <div className={'flex flex-col items-center w-[400px] h-full overflow-y-auto bg-gray-300 px-5'}>
